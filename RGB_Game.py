@@ -55,6 +55,19 @@ class Enemy:
             self.rect.y -= self.speed
 enemy = Enemy(100,100)
 
+class Bullet(pygane.sprite.Sprite):
+    def __init__(self, pos, target_pos, bade_image):
+        super().__init__()
+        self.pos = Vector2(pos) 
+        direction = Vector2(target_pos) - self.pos
+        if direction.length_squared() == 0:
+            direction = Vector(1,0)
+        self.velocity = direction.normalize()* BULLET_SPEED
+
+        angle_deg = -self.velocity.angle_to(Vector2(1,0))
+        self.image = pygame.transform.rotate(base_image, angle_deg)
+        self.rect = self.image.get_rect(ceter=self.pos)
+
 running = True
 while running:
     Screen.fill(BROWN)
@@ -74,7 +87,11 @@ while running:
     
     health_text = font.render(f"Health: {player.health}", True, (255,255,255))
     Screen.blit(health_text, (5, 5))
-    
+
+    if event.type == pygame.KEYDOWN and event.key == pygame.K_f:
+        player_center = player_rect.center
+        enemy_center = enemy_rect.center
+
     # enemy collision
     if player.rect.colliderect(enemy.rect):
         player.health -= 1
